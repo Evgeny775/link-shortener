@@ -5,9 +5,8 @@ import (
 )
 
 func Validate[payloadType any](payload *payloadType) error {
-	var payloadRequest payloadType
 	validate := validator.New()
-	err := validate.Struct(&payloadRequest)
+	err := validate.Struct(payload)
 	if err != nil {
 		return err
 	}
