@@ -3,10 +3,10 @@ services:
     container_name: postgres_db
     image: postgres:18.2
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: postgres_docker
       POSTGRES_PASSWORD: my_pass
       PGDATA: /data/postgres
     volumes:
       - ./postgres-data:/data/postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
