@@ -19,6 +19,8 @@ type AuthConfig struct {
 	Secret string
 }
 
+//TODO refactor this
+
 func LoadConfig() *Config {
 	err := godotenv.Load(".env")
 	if err != nil {
