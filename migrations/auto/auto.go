@@ -4,7 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"link-shortener/internal/link/model"
+	"link-shortener/internal/model"
 	"os"
 )
 

@@ -3,6 +3,7 @@ package main
 import (
 	"link-shortener/configs"
 	"link-shortener/internal/handlers/auth"
+	"link-shortener/internal/handlers/link"
 	"link-shortener/pkg/db"
 	"net/http"
 )
@@ -14,6 +15,7 @@ func main() {
 	router := http.NewServeMux()
 
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf})
+	link.NewLinkHandler(router, link.LinkHandlerDeps{Config: conf})
 
 	server := http.Server{
 		Addr:    ":8080",
