@@ -1,4 +1,4 @@
-package model
+package link
 
 import "gorm.io/gorm"
 

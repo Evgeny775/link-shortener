@@ -2,8 +2,8 @@ package main
 
 import (
 	"link-shortener/configs"
-	"link-shortener/internal/handlers/auth"
-	"link-shortener/internal/handlers/link"
+	"link-shortener/internal/auth"
+	"link-shortener/internal/link"
 	"link-shortener/pkg/db"
 	"net/http"
 )

@@ -3,7 +3,6 @@ package auth
 import (
 	"fmt"
 	"link-shortener/configs"
-	"link-shortener/internal/payload"
 	"link-shortener/pkg/req"
 	"link-shortener/pkg/res"
 	"net/http"
@@ -25,7 +24,7 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		body, err := req.HandleBody[payload.LoginRequest](w, r)
+		body, err := req.HandleBody[LoginRequest](w, r)
 		if err != nil {
 			res.JSON(w, "login error: "+err.Error(), http.StatusUnauthorized)
 			return
@@ -34,7 +33,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		fmt.Println(body)
 		fmt.Println(handler.Config.Auth.Secret)
 		fmt.Println("Login")
-		data := payload.LoginResponse{Token: "67"}
+		data := LoginResponse{Token: "67"}
 		res.JSON(w, data, http.StatusOK)
 	}
 }
@@ -42,7 +41,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 func (handler *AuthHandler) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		body, err := req.HandleBody[payload.RegisterRequest](w, r)
+		body, err := req.HandleBody[RegisterRequest](w, r)
 		if err != nil {
 			res.JSON(w, "register error: "+err.Error(), http.StatusUnauthorized)
 			return
@@ -50,7 +49,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 
 		fmt.Println(body)
 		fmt.Println("Register")
-		data := payload.RegisterResponse{Token: "69"}
+		data := RegisterResponse{Token: "69"}
 		res.JSON(w, data, http.StatusOK)
 	}
 }

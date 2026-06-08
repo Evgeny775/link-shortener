@@ -4,7 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"link-shortener/internal/model"
+	"link-shortener/internal/link"
 	"os"
 )
 
@@ -19,5 +19,5 @@ func main() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&model.Link{})
+	db.AutoMigrate(&link.Link{})
 }
