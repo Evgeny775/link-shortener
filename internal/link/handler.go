@@ -2,19 +2,18 @@ package link
 
 import (
 	"fmt"
-	"link-shortener/configs"
 	"net/http"
 )
 
 type LinkHandlerDeps struct {
-	*configs.Config
+	LinkRepository *LinkRepository
 }
 type LinkHandler struct {
-	*configs.Config
+	LinkRepository *LinkRepository
 }
 
 func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
-	linkHandler := LinkHandler{deps.Config}
+	linkHandler := LinkHandler{deps.LinkRepository}
 	router.HandleFunc("GET /{hash}", linkHandler.GoTo())
 	router.HandleFunc("DELETE /link/{id}", linkHandler.Delete())
 	router.HandleFunc("PATCH /link/{id}", linkHandler.Update())
