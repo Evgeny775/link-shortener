@@ -58,6 +58,15 @@ func (handler *LinkHandler) Update() http.HandlerFunc {
 }
 func (handler *LinkHandler) GoTo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		hash := r.PathValue("hash")
+		link, err := handler.LinkRepository.GetByHsh(hash)
+		
+		if err != nil {
+			http.Error(w, "invalid request or no such link", http.StatusNotFound)
+			return
+		}
 
+		http.Redirect(w, r, link.Url, http.StatusTemporaryRedirect)
+		
 	}
 }
