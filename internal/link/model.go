@@ -1,9 +1,6 @@
 package link
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-
 	"gorm.io/gorm"
 )
 
@@ -13,14 +10,12 @@ type Link struct {
 	Hash string `json:"hash" gorm:"uniqueIndex"`
 }
 
-func NewLink(url string) *Link {
+func NewLink(url string, hash string) *Link {
 	return &Link{
 		Url:  url,
-		Hash: hashFunc(url),
+		Hash: hash,
 	}
 }
 
-func hashFunc(url string) string {
-	hash := sha256.Sum256([]byte(url))
-	return hex.EncodeToString(hash[:])
-}
+
+

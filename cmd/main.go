@@ -16,10 +16,11 @@ func main() {
 
 	//repos
 	linkRepository := link.NewLinkRepository(dataBase)
+	linkService := link.NewLinkService(linkRepository)
 
 	//handlers
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf})
-	link.NewLinkHandler(router, link.LinkHandlerDeps{LinkRepository: linkRepository})
+	link.NewLinkHandler(router, link.LinkHandlerDeps{LinkRepository: linkRepository, LinkService: linkService})
 
 	server := http.Server{
 		Addr:    ":8080",
