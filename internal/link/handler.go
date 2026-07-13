@@ -2,6 +2,8 @@ package link
 
 import (
 	"fmt"
+	"link-shortener/pkg/req"
+	"link-shortener/pkg/res"
 	"net/http"
 )
 
@@ -23,6 +25,21 @@ func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
 
 func (handler *LinkHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[LinkCreateRequest](w, r)
+		if err != nil {
+			return
+		}
+		
+		link := NewLink(body.URL)
+		err = handler.LinkRepository.Create(link)
+		
+		//TODO think about better err
+		if err != nil {
+			http.Error(w, "invalid request or link already exists", http.StatusBadRequest)
+			return
+		}
+		
+		res.JSON(w, link, http.StatusCreated)
 
 	}
 }
