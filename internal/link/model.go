@@ -1,6 +1,11 @@
 package link
 
-import "gorm.io/gorm"
+import (
+	"crypto/sha256"
+	"encoding/hex"
+
+	"gorm.io/gorm"
+)
 
 type Link struct {
 	gorm.Model
@@ -11,8 +16,11 @@ type Link struct {
 func NewLink(url string) *Link {
 	return &Link{
 		Url:  url,
-		Hash: "",
+		Hash: hashFunc(url),
 	}
 }
 
-//TODO make hash function
+func hashFunc(url string) string {
+	hash := sha256.Sum256([]byte(url))
+	return hex.EncodeToString(hash[:])
+}
