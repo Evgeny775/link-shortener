@@ -3,6 +3,8 @@ package link
 import (
 	"math/rand"
 	"fmt"
+	"errors"
+	"gorm.io/gorm"
 )
 
 type LinkService struct{
@@ -17,23 +19,29 @@ func NewLinkService (repository *LinkRepository) *LinkService{
 
 func (s *LinkService) AddLink(url string) (*Link, error){
 	
-	var exist = true
+	var link *Link
 	var hash string
 	var err error
 	
-	for exist{
+	for i := 0; i < 10; i++{
 		hash = getRandString(6)
-		exist, err = s.Repository.IsHashExist(hash)
-		
-		if err != nil{
-			return nil, fmt.Errorf("failed to check hash existence: %w", err)
-		}
-	}
+		link = NewLink(url, hash)
 
-	link := NewLink(url, hash)
-	err = s.Repository.Create(link)
+		err = s.Repository.Create(link)
+
+		if err == nil {
+			return link, nil
+		}
+
+		if errors.Is(err, gorm.ErrDuplicatedKey){
+			continue
+		} 
+		
+		
+		return nil, fmt.Errorf("failed to save link: %w", err)
+	}
 	
-	return link, err
+	return nil, fmt.Errorf("failed to generate unique hash after 10 attempts, last error: %w", err)
 
 }
 

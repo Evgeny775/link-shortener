@@ -30,18 +30,3 @@ func (repo *LinkRepository) GetByHash(hash string) (*Link, error) {
 	}
 	return &link, nil
 }
-
-func (repo *LinkRepository) IsHashExist(hash string) (bool,error){
-	var count int64 
-
-	err := repo.Database.DB.Model(&Link{}).
-	Where("hash = ?", hash).
-	Limit(1).
-	Count(&count).Error
-
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil 
-}
