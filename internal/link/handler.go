@@ -5,6 +5,8 @@ import (
 	"link-shortener/pkg/req"
 	"link-shortener/pkg/res"
 	"net/http"
+	"strconv"
+
 )
 
 type LinkHandlerDeps struct {
@@ -54,7 +56,25 @@ func (handler *LinkHandler) Delete() http.HandlerFunc {
 
 func (handler *LinkHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[LinkUpdateRequest](w, r)
+		if err != nil {
+			return
+		}
 
+		idString := r.PathValue("id")
+		idInt, err := strconv.Atoi(idString)
+		if err != nil {
+			http.Error(w, "Error parsing id", http.StatusBadRequest)
+			return
+		}
+
+		newLink, err := handler.LinkService.UpdateLink(body,uint(idInt))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		res.JSON(w, newLink, http.StatusOK)
 	}
 }
 func (handler *LinkHandler) GoTo() http.HandlerFunc {

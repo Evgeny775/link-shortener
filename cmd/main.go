@@ -14,7 +14,7 @@ func main() {
 	dataBase := db.NewDB(conf)
 	router := http.NewServeMux()
 
-	//repos
+	
 	linkRepository := link.NewLinkRepository(dataBase)
 	linkService := link.NewLinkService(linkRepository)
 

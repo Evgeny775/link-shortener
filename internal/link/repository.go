@@ -1,6 +1,10 @@
 package link
 
-import "link-shortener/pkg/db"
+import (
+	"link-shortener/pkg/db"
+
+	"gorm.io/gorm/clause"
+)
 
 type LinkRepository struct {
 	Database *db.DB
@@ -29,4 +33,23 @@ func (repo *LinkRepository) GetByHash(hash string) (*Link, error) {
 		return nil, result.Error
 	}
 	return &link, nil
+}
+
+func (repo *LinkRepository) Update(link *Link) error {
+	result := repo.Database.DB.Clauses(clause.Returning{}).Updates(link)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (repo *LinkRepository) HashExistExeptID(hash string, id int) (bool, error) {
+	var count int64
+	err := repo.Database.DB.Model(&Link{}).
+		Where("hash = ? and id <> ?", hash, id).
+		Count(&count).Error
+
+	return count > 0, err
 }
