@@ -4,6 +4,7 @@ import (
 	"link-shortener/configs"
 	"link-shortener/internal/auth"
 	"link-shortener/internal/link"
+	"link-shortener/internal/middleware"
 	"link-shortener/pkg/db"
 	"net/http"
 )
@@ -24,7 +25,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: router,
+		Handler: middleware.Logging(router),
 	}
 
 	server.ListenAndServe()
