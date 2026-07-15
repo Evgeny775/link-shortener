@@ -65,7 +65,7 @@ func (s *LinkService) UpdateLink(body *LinkUpdateRequest, id int) (*Link, error)
 	}
 
 	if hashExist {
-		return nil, errors.New("This hash already exists")
+		return nil, hashAlreadyExist
 	}
 
 	newLink := &Link{
@@ -77,4 +77,18 @@ func (s *LinkService) UpdateLink(body *LinkUpdateRequest, id int) (*Link, error)
 	err = s.Repository.Update(newLink)
 
 	return newLink, err
+}
+
+func (s *LinkService) DeleteLink(id int) (error) {
+	idExist, err := s.Repository.IDExist(id)
+	if err != nil {
+		return err
+	}
+
+	if idExist{
+		err = s.Repository.Delete(id)
+		return err
+	}
+
+	return noSuchId
 }

@@ -63,3 +63,12 @@ func (repo *LinkRepository) HashExistExeptID(hash string, id int) (bool, error) 
 
 	return count > 0, err
 }
+
+func (repo *LinkRepository) IDExist(id int) (bool, error) {
+	var count int64
+	err := repo.Database.DB.Model(&Link{}).
+		Where("id = ?", id).
+		Count(&count).Error
+
+	return count > 0, err
+}

@@ -5,6 +5,7 @@ import (
 	"link-shortener/pkg/res"
 	"net/http"
 	"strconv"
+	"errors"
 )
 
 type LinkHandlerDeps struct {
@@ -54,7 +55,13 @@ func (handler *LinkHandler) Delete() http.HandlerFunc {
 			return
 		}
 
-		err = handler.LinkRepository.Delete(idInt)
+		err = handler.LinkService.DeleteLink(idInt)
+
+		if errors.Is(err, noSuchId) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
