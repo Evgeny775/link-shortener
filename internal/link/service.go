@@ -57,9 +57,9 @@ func getRandString(n int) string {
 	return string(b)
 }
 
-func (s *LinkService) UpdateLink(body *LinkUpdateRequest, id uint) (*Link, error) {
+func (s *LinkService) UpdateLink(body *LinkUpdateRequest, id int) (*Link, error) {
 
-	hashExist, err := s.Repository.HashExistExeptID(body.Hash, int(id))
+	hashExist, err := s.Repository.HashExistExeptID(body.Hash, id)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (s *LinkService) UpdateLink(body *LinkUpdateRequest, id uint) (*Link, error
 	}
 
 	newLink := &Link{
-		Model: gorm.Model{ID: id},
+		Model: gorm.Model{ID: uint(id)},
 		Url:   body.URL,
 		Hash:  body.Hash,
 	}

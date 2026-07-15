@@ -45,6 +45,16 @@ func (repo *LinkRepository) Update(link *Link) error {
 	return nil
 }
 
+func (repo *LinkRepository) Delete(id int) error {
+	result := repo.Database.DB.Delete(&Link{},id)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (repo *LinkRepository) HashExistExeptID(hash string, id int) (bool, error) {
 	var count int64
 	err := repo.Database.DB.Model(&Link{}).

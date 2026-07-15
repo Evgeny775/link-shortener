@@ -1,12 +1,10 @@
 package link
 
 import (
-	"fmt"
 	"link-shortener/pkg/req"
 	"link-shortener/pkg/res"
 	"net/http"
 	"strconv"
-
 )
 
 type LinkHandlerDeps struct {
@@ -49,8 +47,20 @@ func (handler *LinkHandler) Create() http.HandlerFunc {
 
 func (handler *LinkHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.PathValue("id")
-		fmt.Println(id)
+		idString := r.PathValue("id")
+		idInt, err := strconv.Atoi(idString)
+		if err != nil {
+			http.Error(w, "Error parsing id", http.StatusBadRequest)
+			return
+		}
+
+		err = handler.LinkRepository.Delete(idInt)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		res.JSON(w, nil, http.StatusOK)
 	}
 }
 
@@ -68,7 +78,7 @@ func (handler *LinkHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		newLink, err := handler.LinkService.UpdateLink(body,uint(idInt))
+		newLink, err := handler.LinkService.UpdateLink(body,idInt)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -77,6 +87,7 @@ func (handler *LinkHandler) Update() http.HandlerFunc {
 		res.JSON(w, newLink, http.StatusOK)
 	}
 }
+
 func (handler *LinkHandler) GoTo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hash := r.PathValue("hash")
