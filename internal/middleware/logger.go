@@ -12,6 +12,7 @@ func Logging(next http.Handler) http.Handler{
 
 		wrapper := &WrapperWriter{
 			ResponseWriter: w,
+			StatusCode: http.StatusOK,
 		}
 
 		next.ServeHTTP(wrapper,r)
