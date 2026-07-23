@@ -23,9 +23,14 @@ func main() {
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf})
 	link.NewLinkHandler(router, link.LinkHandlerDeps{LinkRepository: linkRepository, LinkService: linkService})
 
+	stack := middleware.Chain(
+		middleware.CORS, 
+		middleware.Logging,
+	)
+
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: middleware.CORS(middleware.Logging(router)),
+		Handler: stack(router),
 	}
 
 	server.ListenAndServe()
