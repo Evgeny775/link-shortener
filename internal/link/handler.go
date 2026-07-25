@@ -3,6 +3,7 @@ package link
 import (
 	"link-shortener/pkg/req"
 	"link-shortener/pkg/res"
+	"link-shortener/internal/middleware"
 	"net/http"
 	"strconv"
 	"errors"
@@ -20,9 +21,9 @@ type LinkHandler struct {
 func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
 	linkHandler := LinkHandler{deps.LinkRepository, deps.LinkService}
 	router.HandleFunc("GET /{hash}", linkHandler.GoTo())
-	router.HandleFunc("DELETE /link/{id}", linkHandler.Delete())
-	router.HandleFunc("PATCH /link/{id}", linkHandler.Update())
-	router.HandleFunc("POST  /link", linkHandler.Create())
+	router.Handle("DELETE /link/{id}", middleware.IsAuthed(linkHandler.Delete()))
+	router.Handle("PATCH /link/{id}", middleware.IsAuthed(linkHandler.Update()))
+	router.Handle("POST  /link",  middleware.IsAuthed(linkHandler.Create()))
 
 }
 

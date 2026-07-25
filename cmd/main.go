@@ -14,7 +14,6 @@ func main() {
 	conf := configs.LoadConfig()
 	dataBase := db.NewDB(conf)
 	router := http.NewServeMux()
-
 	
 	linkRepository := link.NewLinkRepository(dataBase)
 	linkService := link.NewLinkService(linkRepository)
@@ -26,7 +25,6 @@ func main() {
 	stack := middleware.Chain(
 		middleware.CORS, 
 		middleware.Logging,
-		middleware.IsAuthed,
 	)
 
 	server := http.Server{
