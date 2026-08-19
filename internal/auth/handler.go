@@ -13,7 +13,8 @@ type AuthHandlerDeps struct {
 	*configs.Config
 }
 type AuthHandler struct {
-	*configs.Config
+	*configs.Config,
+	UserService UserService
 }
 
 func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {

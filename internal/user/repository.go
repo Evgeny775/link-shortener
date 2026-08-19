@@ -1,0 +1,35 @@
+package user
+
+import "link-shortener/pkg/db"
+
+type UserRepository struct {
+	Database *db.DB
+}
+
+func NewUserRepository(database *db.DB)*UserRepository{
+	return &UserRepository{
+		Database: database,
+	}
+}
+
+func (repo *UserRepository) Create (user *User)error{
+	
+	result := repo.Database.DB.Create(user)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (repo* UserRepository) FindByEmail(email string)(*User, error){
+	var user User
+
+	result := repo.Database.DB.First(&user,"email = ?", email)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
