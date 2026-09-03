@@ -5,6 +5,7 @@ import (
 	"link-shortener/internal/auth"
 	"link-shortener/internal/link"
 	"link-shortener/internal/middleware"
+	"link-shortener/internal/user"
 	"link-shortener/pkg/db"
 	"net/http"
 )
@@ -17,8 +18,10 @@ func main() {
 
 	linkRepository := link.NewLinkRepository(dataBase)
 	linkService := link.NewLinkService(linkRepository)
+	userRepository := user.NewUserRepository(dataBase)
+	userService := user.NewUserService(userRepository)
 
-	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf})
+	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf, UserService: userService})
 	link.NewLinkHandler(router, link.LinkHandlerDeps{LinkService: linkService})
 
 	stack := middleware.Chain(

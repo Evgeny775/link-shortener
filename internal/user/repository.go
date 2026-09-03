@@ -12,7 +12,7 @@ func NewUserRepository(database *db.DB) *UserRepository {
 	}
 }
 
-func (repo *UserRepository) Create(user *User) (*User, error) {
+func (repo *UserRepository) CreateUser(user *User) (*User, error) {
 
 	result := repo.Database.DB.Create(user)
 

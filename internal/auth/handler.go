@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"fmt"
 	"link-shortener/configs"
+	"link-shortener/internal/user"
 	"link-shortener/pkg/req"
 	"link-shortener/pkg/res"
 
@@ -11,14 +11,15 @@ import (
 
 type AuthHandlerDeps struct {
 	*configs.Config
+	*user.UserService
 }
 type AuthHandler struct {
-	*configs.Config,
-	UserService UserService
+	*configs.Config
+	*user.UserService
 }
 
 func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
-	authHandler := AuthHandler{Config: deps.Config}
+	authHandler := AuthHandler{Config: deps.Config, UserService: deps.UserService}
 	router.HandleFunc("POST /auth/login", authHandler.Login())
 	router.HandleFunc("POST /auth/register", authHandler.Register())
 }
@@ -32,11 +33,9 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			return
 		}
 
-		fmt.Println(body)
-		fmt.Println(handler.Config.Auth.Secret)
-		fmt.Println("Login")
-		data := LoginResponse{Token: "67"}
-		res.JSON(w, data, http.StatusOK)
+		handler.UserService.Login(body.Email)
+		resp := LoginResponse{}
+		res.JSON(w, resp, http.StatusOK)
 	}
 }
 
@@ -45,13 +44,19 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 
 		body, err := req.HandleBody[RegisterRequest](w, r)
 		if err != nil {
+			res.JSON(w, "request error: "+err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		_, err = handler.UserService.Register(body.Email, body.Password, body.Username)
+
+		if err != nil {
 			res.JSON(w, "register error: "+err.Error(), http.StatusUnauthorized)
 			return
 		}
 
-		fmt.Println(body)
-		fmt.Println("Register")
-		data := RegisterResponse{Token: "69"}
-		res.JSON(w, data, http.StatusOK)
+		resp := RegisterResponse{Token: "67"}
+		res.JSON(w, resp, http.StatusOK)
+
 	}
 }
