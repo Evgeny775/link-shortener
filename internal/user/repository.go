@@ -6,27 +6,27 @@ type UserRepository struct {
 	Database *db.DB
 }
 
-func NewUserRepository(database *db.DB)*UserRepository{
+func NewUserRepository(database *db.DB) *UserRepository {
 	return &UserRepository{
 		Database: database,
 	}
 }
 
-func (repo *UserRepository) Create (user *User)error{
-	
+func (repo *UserRepository) Create(user *User) (*User, error) {
+
 	result := repo.Database.DB.Create(user)
 
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
 
-	return nil
+	return user, nil
 }
 
-func (repo* UserRepository) FindByEmail(email string)(*User, error){
+func (repo *UserRepository) FindByEmail(email string) (*User, error) {
 	var user User
 
-	result := repo.Database.DB.First(&user,"email = ?", email)
+	result := repo.Database.DB.First(&user, "email = ?", email)
 
 	if result.Error != nil {
 		return nil, result.Error

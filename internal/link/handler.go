@@ -1,29 +1,27 @@
 package link
 
 import (
+	"errors"
+	"link-shortener/internal/middleware"
 	"link-shortener/pkg/req"
 	"link-shortener/pkg/res"
-	"link-shortener/internal/middleware"
 	"net/http"
 	"strconv"
-	"errors"
 )
 
 type LinkHandlerDeps struct {
-	LinkRepository *LinkRepository
-	LinkService    *LinkService
+	LinkService *LinkService
 }
 type LinkHandler struct {
-	LinkRepository *LinkRepository
-	LinkService    *LinkService
+	LinkService *LinkService
 }
 
 func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
-	linkHandler := LinkHandler{deps.LinkRepository, deps.LinkService}
+	linkHandler := LinkHandler{deps.LinkService}
 	router.HandleFunc("GET /{hash}", linkHandler.GoTo())
 	router.Handle("DELETE /link/{id}", middleware.IsAuthed(linkHandler.Delete()))
 	router.Handle("PATCH /link/{id}", middleware.IsAuthed(linkHandler.Update()))
-	router.Handle("POST  /link",  middleware.IsAuthed(linkHandler.Create()))
+	router.Handle("POST  /link", middleware.IsAuthed(linkHandler.Create()))
 
 }
 
@@ -36,7 +34,6 @@ func (handler *LinkHandler) Create() http.HandlerFunc {
 
 		link, err := handler.LinkService.AddLink(body.URL)
 
-		//TODO think about better err
 		if err != nil {
 			http.Error(w, "invalid request or link already exists", http.StatusBadRequest)
 			return
@@ -86,7 +83,7 @@ func (handler *LinkHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		newLink, err := handler.LinkService.UpdateLink(body,idInt)
+		newLink, err := handler.LinkService.UpdateLink(body, idInt)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -99,7 +96,7 @@ func (handler *LinkHandler) Update() http.HandlerFunc {
 func (handler *LinkHandler) GoTo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hash := r.PathValue("hash")
-		link, err := handler.LinkRepository.GetByHash(hash)
+		link, err := handler.LinkService.GetByHash(hash)
 
 		if err != nil {
 			http.Error(w, "invalid request or no such link", http.StatusNotFound)

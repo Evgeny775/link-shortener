@@ -79,16 +79,21 @@ func (s *LinkService) UpdateLink(body *LinkUpdateRequest, id int) (*Link, error)
 	return newLink, err
 }
 
-func (s *LinkService) DeleteLink(id int) (error) {
+func (s *LinkService) DeleteLink(id int) error {
 	idExist, err := s.Repository.IDExist(id)
 	if err != nil {
 		return err
 	}
 
-	if idExist{
+	if idExist {
 		err = s.Repository.Delete(id)
 		return err
 	}
 
 	return noSuchId
+}
+
+func (s *LinkService) GetByHash(hash string) (*Link, error) {
+	return s.Repository.GetByHash(hash)
+
 }

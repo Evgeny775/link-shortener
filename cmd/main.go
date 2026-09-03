@@ -14,16 +14,15 @@ func main() {
 	conf := configs.LoadConfig()
 	dataBase := db.NewDB(conf)
 	router := http.NewServeMux()
-	
+
 	linkRepository := link.NewLinkRepository(dataBase)
 	linkService := link.NewLinkService(linkRepository)
 
-	//handlers
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf})
-	link.NewLinkHandler(router, link.LinkHandlerDeps{LinkRepository: linkRepository, LinkService: linkService})
+	link.NewLinkHandler(router, link.LinkHandlerDeps{LinkService: linkService})
 
 	stack := middleware.Chain(
-		middleware.CORS, 
+		middleware.CORS,
 		middleware.Logging,
 	)
 
