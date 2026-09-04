@@ -1,17 +1,17 @@
 package configs
 
 import (
+	"errors"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 )
 
 type Config struct {
-	Db   DBconfig
+	Db   DBConfig
 	Auth AuthConfig
 }
 
-type DBconfig struct {
+type DBConfig struct {
 	Dsn string
 }
 
@@ -19,19 +19,25 @@ type AuthConfig struct {
 	Secret string
 }
 
-//TODO refactor this
+func LoadConfig() (*Config, error) {
+	_ = godotenv.Load()
 
-func LoadConfig() *Config {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Print("Error loading .env file. Now using default config")
-	}
-	return &Config{
-		DBconfig{
-			os.Getenv("DSN"),
+	cfg := &Config{
+		Db: DBConfig{
+			Dsn: os.Getenv("DSN"),
 		},
-		AuthConfig{
-			os.Getenv("TOKEN"),
+		Auth: AuthConfig{
+			Secret: os.Getenv("TOKEN"),
 		},
 	}
+
+	if cfg.Db.Dsn == "" {
+		return nil, errors.New("DSN is required")
+	}
+
+	if cfg.Auth.Secret == "" {
+		return nil, errors.New("TOKEN is required")
+	}
+
+	return cfg, nil
 }

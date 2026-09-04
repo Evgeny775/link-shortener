@@ -12,7 +12,10 @@ import (
 
 func main() {
 
-	conf := configs.LoadConfig()
+	conf, err := configs.LoadConfig()
+	if err != nil {
+		panic("cannot load .env")
+	}
 	dataBase := db.NewDB(conf)
 	router := http.NewServeMux()
 
