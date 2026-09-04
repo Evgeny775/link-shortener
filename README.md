@@ -11,6 +11,10 @@ This project is a backend service for creating and managing shortened URLs.
 
 The main goal of the project is to practice building a backend application in Go with a layered architecture, working with HTTP handlers, middleware, databases and authentication.
 
+## 📚 Learning resource
+
+The initial version of this project was developed while following a Go backend development guide. The project is now being independently extended and refactored as I continue learning Go and backend development.
+
 ### Current functionality
 
 * 🔗 Create shortened links
