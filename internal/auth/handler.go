@@ -29,13 +29,24 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 
 		body, err := req.HandleBody[LoginRequest](w, r)
 		if err != nil {
-			res.JSON(w, "login error: "+err.Error(), http.StatusUnauthorized)
+			res.JSON(w, "request error: "+err.Error(), http.StatusUnauthorized)
 			return
 		}
 
-		handler.UserService.Login(body.Email)
-		resp := LoginResponse{}
-		res.JSON(w, resp, http.StatusOK)
+		_, err = handler.UserService.Login(body.Email, body.Password)
+
+		if err == user.WrongCredentials {
+			res.JSON(w, "wrong email or password", http.StatusUnauthorized)
+			return
+		}
+
+		if err != nil {
+			res.JSON(w, "login error"+err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		_ = LoginResponse{Token: "67"}
+		res.JSON(w, err, http.StatusOK)
 	}
 }
 
@@ -49,6 +60,11 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 		}
 
 		_, err = handler.UserService.Register(body.Email, body.Password, body.Username)
+
+		if err == user.AlreadyExists {
+			res.JSON(w, "user already exists", http.StatusUnauthorized)
+			return
+		}
 
 		if err != nil {
 			res.JSON(w, "register error: "+err.Error(), http.StatusUnauthorized)

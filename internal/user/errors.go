@@ -1,10 +1,11 @@
 package user
 
-import(
+import (
 	"errors"
 )
 
-var(
-	userNotExists = errors.New("This user does not exists")
-	userAlreadyExists = errors.New("This user already exists")
+var (
+	NotExists        = errors.New("this user does not exists")
+	AlreadyExists    = errors.New("this user already exists")
+	WrongCredentials = errors.New("wrong email or password")
 )

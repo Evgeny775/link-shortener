@@ -25,7 +25,7 @@ func (s *UserService) Register(email string, password string, userName string) (
 	}
 
 	if user != nil {
-		return nil, userAlreadyExists
+		return nil, AlreadyExists
 	}
 
 	encryptedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -50,12 +50,21 @@ func (s *UserService) Register(email string, password string, userName string) (
 
 }
 
-func (s *UserService) Login(email string) (*User, error) {
+func (s *UserService) Login(email string, password string) (*User, error) {
 
 	user, err := s.Repository.FindByEmail(email)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, fmt.Errorf("error checking email: %w", err)
+	}
+
+	if user == nil {
+		return nil, WrongCredentials
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 
 	if err != nil {
-		return nil, err
+		return nil, WrongCredentials
 	}
 
 	return user, nil
