@@ -7,6 +7,7 @@ import (
 	"link-shortener/internal/middleware"
 	"link-shortener/internal/user"
 	"link-shortener/pkg/db"
+	"log"
 	"net/http"
 )
 
@@ -14,8 +15,9 @@ func main() {
 
 	conf, err := configs.LoadConfig()
 	if err != nil {
-		panic("cannot load .env")
+		log.Fatal("cannot load .env")
 	}
+	
 	dataBase := db.NewDB(conf)
 	router := http.NewServeMux()
 
