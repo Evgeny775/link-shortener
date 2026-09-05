@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"errors"
 	"link-shortener/configs"
 	"link-shortener/internal/user"
+	"link-shortener/pkg/jwt"
 	"link-shortener/pkg/req"
 	"link-shortener/pkg/res"
 
@@ -33,9 +35,9 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			return
 		}
 
-		_, err = handler.UserService.Login(body.Email, body.Password)
+		logUser, err := handler.UserService.Login(body.Email, body.Password)
 
-		if err == user.WrongCredentials {
+		if errors.Is(err, user.WrongCredentials) {
 			res.JSON(w, "wrong email or password", http.StatusUnauthorized)
 			return
 		}
@@ -45,8 +47,16 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			return
 		}
 
-		_ = LoginResponse{Token: "67"}
-		res.JSON(w, err, http.StatusOK)
+		logJWT := jwt.NewJWT(handler.Config.Auth.Secret)
+		token, err := logJWT.Create(logUser.Email)
+
+		if err != nil {
+			res.JSON(w, "jwt generation error"+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		resp := LoginResponse{Token: token}
+		res.JSON(w, resp, http.StatusOK)
 	}
 }
 
@@ -59,9 +69,9 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		_, err = handler.UserService.Register(body.Email, body.Password, body.Username)
+		regUser, err := handler.UserService.Register(body.Email, body.Password, body.Username)
 
-		if err == user.AlreadyExists {
+		if errors.Is(err, user.AlreadyExists) {
 			res.JSON(w, "user already exists", http.StatusUnauthorized)
 			return
 		}
@@ -71,7 +81,15 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		resp := RegisterResponse{Token: "67"}
+		regJWT := jwt.NewJWT(handler.Config.Auth.Secret)
+		token, err := regJWT.Create(regUser.Email)
+
+		if err != nil {
+			res.JSON(w, "jwt generation error"+err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		resp := RegisterResponse{Token: token}
 		res.JSON(w, resp, http.StatusOK)
 
 	}
